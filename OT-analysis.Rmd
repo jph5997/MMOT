@@ -1,0 +1,60 @@
+---
+title: "March Madness OT Analysis"
+output: html_notebook
+---
+
+Hello, and welcome to the first project from OddBall Analytics. As the name somewhat suggests we do a lot of weird projects on sports analytics. 
+
+```{r}
+rm(list = ls())
+```
+
+Let's get right into the code. The first thing we want to do is load in any data packages and the data itself.
+```{r}
+library(mosaic)
+library(tidyverse)
+library(dcData)
+library(data.table)
+library(ggplot2)
+```
+I created the CSV myself and it consists of multiple columns, as seen below.
+```{r}
+data <- fread('./OT-results.csv')
+data %>%
+  head()
+```
+
+Next, let's take a look at each of the different ways to divide the data. As you can see our data only consists of three years, so it may not be the most inclusive data ever, but it will suffice.
+
+```{r}
+data$Year %>%
+  unique()
+```
+
+
+A quick side note, I would like to check the number of overtime games in the past few tournaments.
+```{r}
+freq_ot <- fread('./OT-history.csv')
+freq_ot %>%
+  head()
+```
+
+Now time to make a chart of some sort that displays this info
+```{r}
+value <- freq_ot$`# of OTs`
+threshold <- 3.5
+freq_ot %>%
+  ggplot(aes(x = Year, y = value, fill = ifelse(value > threshold, "above", "below"))) +
+  geom_col() + 
+  scale_x_continuous(breaks = c(seq(2010, 2019, 1), seq(2021, 2022, 1))) +
+  scale_fill_manual(values = c("above" = "blue", "below" = "red"), guide = "none")
+```
+
+
+### Case Study
+Now we can look at the data we collected. This is the in depth look at the overtime
+```{r}
+ots22 <- 
+  data %>%
+  filter(Year == 22, OT == 1)
+```
